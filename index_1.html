@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guess Game</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef1f5;
+      color: #222;
+      margin: 0;
+      padding: 40px 16px;
+    }
+
+    .game {
+      max-width: 460px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 28px 36px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    #guessInput {
+      width: 100%;
+      max-width: 300px;
+      box-sizing: border-box;
+      font-size: 20px;
+      padding: 8px 10px;
+      border: 2px solid #222;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 16px;
+      font-size: 20px;
+      padding: 8px 18px;
+      color: #fff;
+      border: 2px solid #222;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #guessBtn {
+      background: #0000ee;
+    }
+
+    #restartBtn {
+      background: #2e7d32;
+    }
+
+    hr {
+      margin: 20px 0 12px;
+      border: none;
+      border-top: 1px solid #bbb;
+    }
+
+    #attempt,
+    #result {
+      font-size: 18px;
+      margin: 8px 0;
+    }
+
+    #result {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game">
+    <h1>Guess Game</h1>
+    <p>Guess a number between 1 - 20, you have 5 chances.</p>
+
+    <input type="text" id="guessInput" autocomplete="off">
+
+    <button id="guessBtn" onclick="guess()">Guess!</button>
+    <button id="restartBtn" onclick="restart()">Restart</button>
+
+    <hr>
+
+    <p id="attempt"></p>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    const MAX_ATTEMPTS = 5;
+    let target = 0;
+    let attempts = 0;
+    let playing = false;
+
+    function isNumeric(value) {
+      return value.trim() !== "" && !isNaN(value) && isFinite(value);
+    }
+
+    function showAttempt() {
+      document.getElementById("attempt").textContent = "Attempt " + attempts + "/" + MAX_ATTEMPTS;
+    }
+
+    function setupGame() {
+      document.getElementById("guessInput").value = "";
+      document.getElementById("guessBtn").style.display = "none";
+      document.getElementById("restartBtn").style.display = "block";
+      attempts = 0;
+      showAttempt();
+      document.getElementById("result").textContent = "";
+    }
+
+    function restart() {
+      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("guessBtn").style.display = "block";
+
+      target = Math.floor(Math.random() * 20) + 1;
+      attempts = 0;
+      showAttempt();
+      document.getElementById("result").textContent = "";
+
+      const input = document.getElementById("guessInput");
+      input.value = "";
+      input.focus();
+      playing = true;
+    }
+
+    function guess() {
+      if (!playing) {
+        return;
+      }
+
+      const input = document.getElementById("guessInput");
+      const value = input.value;
+
+      if (!isNumeric(value)) {
+        return;
+      }
+
+      const number = Number(value);
+      attempts = attempts + 1;
+      showAttempt();
+
+      const result = document.getElementById("result");
+      result.style.color = "#222";
+
+      if (number === target) {
+        result.textContent = "You WIN";
+        result.style.color = "green";
+        endGame();
+      } else if (attempts >= MAX_ATTEMPTS) {
+        result.textContent = "You LOSE";
+        result.style.color = "red";
+        endGame();
+      } else if (number > target) {
+        result.textContent = number + " is too high";
+      } else {
+        result.textContent = number + " is too low";
+      }
+
+      input.value = "0";
+      input.focus();
+      input.select();
+    }
+
+    function endGame() {
+      playing = false;
+      document.getElementById("guessBtn").style.display = "none";
+      document.getElementById("restartBtn").style.display = "block";
+    }
+
+    document.getElementById("guessInput").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        guess();
+      }
+    });
+
+    window.onload = setupGame;
+  </script>
+</body>
+</html>
